@@ -10,12 +10,18 @@ Release date: September 21, 2025.
 
 * Added the ability to transfer data from a topic to a table. [YDB Transfer](./concepts/transfer.md) allows you to transfer both small and giant (gb/s) amounts of data from a topic to a table in seconds. You can create a transfer using the new [CREATE TRANSFER](./yql/reference/syntax/create-transfer.md) command in YQL. [instructions with an example](./recipes/transfer/quickstart.md) have been prepared for a quick start.
 * Added [spilling](./concepts/spilling.md), a memory management mechanism, that temporarily offloads intermediate data arising from computations and exceeding available node RAM capacity to external storage. In YDB, disk storage is currently used for spilling. Spilling enables execution of user queries that require processing large data volumes exceeding available node memory.
+* [Analytical capabilities](./concepts/analytics) are now available by default, with column-based tables enabled without experimental flags, LZ4 compression, and default hash partitioning. Supported operations include a wide range of DML (`UPDATE`, `DELETE`, `UPSERT`, `INSERT INTO ... SELECT`) and `CREATE TABLE AS SELECT` for data transformation workflows. Integration with tools such as `dbt`, `Apache Airflow`, `Jupyter`, and `Superset`, along with federated queries to S3, enables end-to-end analytical pipelines within the YDB.
+* Cost-Based Optimizer (CBO) is now automatically enabled for queries involving column-based tables. It analyzes table statistics and selects optimal join order and join types to improve performance. CBO can also be manually enabled for any query using session settings. Supported [hints](./) allow fine-tuning of execution plans for complex analytical queries.
+
 * Enabled by default:
 
+  * [column-based tables](./), now available without experimental flags and support extended list of DML operations (`REPLACE`, `UPDATE`, `DELETE`, `UPSERT`) and `CREATE TABLE AS SELECT`.
+  * [cost-based optimizer (CBO)](./concepts/optimizer.md#cost-based-optimizer), which automatically activates when a query involves column-baed tables and selects optimal join order and type; supports [hints](./dev/optimizer#cost-based-optimizer) such as LookupJoin, BroadcastJoin and other.
   * [vector index](./dev/vector-indexes.md) for approximate vector similarity search,
   * supported in [YDB Topics Kafka API](./reference/kafka-api/) client-side consumer balancing, [compacted topics](https://docs.confluent.io/kafka/design/log_compaction.html) and [transactions](https://www.confluent.io/blog/transactions-apache-kafka/),
   * support for [auto-partitioning topics](./concepts/cdc.md?#topic-partitions) for row-oriented tables in CDC,
   * parameterized [Decimal type](./yql/reference/types/primitive.md#numeric),
+  * support for [Datetime64 type](.yql/reference/types/primitive.md#datetime),
   * automatic cleanup of temporary tables and directories during export to S3,
   * support for changefeeds in backup and restore operations,
   * the ability to [enable followers (read replicas)](./yql/reference/syntax/alter_table/indexes.md) for covered secondary indexes,
